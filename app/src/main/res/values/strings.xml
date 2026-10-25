@@ -7,8 +7,8 @@
     <string name="no_angle">No hinge sensor found</string>
     <string name="hinge_ok">Hinge sensor found</string>
     <string name="hinge_missing">No hinge sensor. Backup mode: the blur plays when the screen switches.</string>
-    <string name="blur_ok">Real blur is supported</string>
-    <string name="blur_off">Real blur is off. Turn off Power saving, and turn off \"Reduce transparency and blur\" in Accessibility. Until then a frosted look is used.</string>
+    <string name="blur_ok">Samsung window blur is on</string>
+    <string name="blur_off">Samsung window blur is off on this phone. That is OK: screen capture mode is used instead.</string>
     <string name="status_overlay">Appear on top allowed</string>
     <string name="status_notif">Notification allowed</string>
     <string name="status_battery">Battery: app can keep running</string>
@@ -42,4 +42,14 @@
     <string name="notif_title">Fold effect is on</string>
     <string name="notif_text">Open or close your phone to see it</string>
     <string name="stop">Stop</string>
+    <string name="capture_on">Screen capture is ON (real blur)</string>
+    <string name="capture_off">Screen capture is OFF. Tap \"Turn on real blur\" below.</string>
+    <string name="step_capture">Turn on real blur (allow screen capture)</string>
+    <string name="capture_failed">Could not open the screen capture permission</string>
+    <string name="capture_denied">Screen capture not allowed. Only a dark tint will show.</string>
+    <string name="keep_capture">Keep real blur after locking</string>
+    <string name="keep_capture_help">Android stops screen capture every time the phone locks. To keep it on: open Developer options and turn ON \"Turn off screen share protections\". Without this, open FoldBlur and tap \"Turn on real blur\" again after each lock.</string>
+    <string name="open_dev_options">Open Developer options</string>
+    <string name="notif_no_capture">Real blur is off. Tap to open FoldBlur and turn on screen capture.</string>
+    <string name="notif_capture_stopped">Screen capture stopped (phone locked). Tap to open FoldBlur and turn on real blur again.</string>
 </resources>

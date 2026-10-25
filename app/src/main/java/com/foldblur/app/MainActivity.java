@@ -10,6 +10,8 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.projection.MediaProjectionConfig;
+import android.media.projection.MediaProjectionManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -40,7 +42,10 @@ public class MainActivity extends Activity implements SensorEventListener {
     private Button overlayBtn;
     private Button notifBtn;
     private Button batteryBtn;
+    private Button captureBtn;
     private Switch effectSwitch;
+
+    private static final int REQ_CAPTURE = 7;
     private boolean updatingUi;
 
     private SensorManager sensors;
@@ -73,6 +78,43 @@ public class MainActivity extends Activity implements SensorEventListener {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] results) {
         super.onRequestPermissionsResult(requestCode, permissions, results);
         refresh();
+    }
+
+    // ---------- Screen capture (real blur on Samsung) ----------
+
+    private void requestCapture() {
+        MediaProjectionManager mpm = getSystemService(MediaProjectionManager.class);
+        Intent ask = Build.VERSION.SDK_INT >= 34
+                // Only offer "Entire screen", the effect needs the whole screen.
+                ? mpm.createScreenCaptureIntent(MediaProjectionConfig.createConfigForDefaultDisplay())
+                : mpm.createScreenCaptureIntent();
+        try {
+            startActivityForResult(ask, REQ_CAPTURE);
+        } catch (RuntimeException e) {
+            toast(getString(R.string.capture_failed));
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode != REQ_CAPTURE) return;
+        if (resultCode != RESULT_OK || data == null) {
+            toast(getString(R.string.capture_denied));
+            refresh();
+            return;
+        }
+        Prefs.setEnabled(this, true);
+        startForegroundService(new Intent(this, FoldEffectService.class)
+                .setAction(FoldEffectService.ACTION_CAPTURE)
+                .putExtra(FoldEffectService.EXTRA_CODE, resultCode)
+                .putExtra(FoldEffectService.EXTRA_DATA, data));
+        root.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                refresh();
+            }
+        }, 800);
     }
 
     // ---------- Screen layout ----------
@@ -141,6 +183,17 @@ public class MainActivity extends Activity implements SensorEventListener {
         });
         root.addView(effectSwitch);
 
+        captureBtn = button(getString(R.string.step_capture), new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!Settings.canDrawOverlays(MainActivity.this)) {
+                    toast(getString(R.string.need_overlay));
+                    return;
+                }
+                requestCapture();
+            }
+        });
+
         button(getString(R.string.test), new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -166,6 +219,15 @@ public class MainActivity extends Activity implements SensorEventListener {
         slider(getString(R.string.end_angle), Prefs.OPEN_ANGLE, 100, 180,
                 Prefs.DEFAULT_OPEN_ANGLE, "°");
 
+        header(getString(R.string.keep_capture));
+        root.addView(text(getString(R.string.keep_capture_help), 14));
+        button(getString(R.string.open_dev_options), new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                open(new Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS));
+            }
+        });
+
         header(getString(R.string.help));
         root.addView(text(getString(R.string.help_text), 14));
     }
@@ -181,6 +243,8 @@ public class MainActivity extends Activity implements SensorEventListener {
 
         StringBuilder s = new StringBuilder();
         s.append(hinge != null ? OK + getString(R.string.hinge_ok) : NO + getString(R.string.hinge_missing)).append('\n');
+        boolean capturing = FoldEffectService.capturing;
+        s.append(capturing ? OK + getString(R.string.capture_on) : NO + getString(R.string.capture_off)).append('\n');
         s.append(blurOk ? OK + getString(R.string.blur_ok) : NO + getString(R.string.blur_off)).append('\n');
         s.append(overlayOk ? OK : NO).append(getString(R.string.status_overlay)).append('\n');
         s.append(notifOk ? OK : NO).append(getString(R.string.status_notif)).append('\n');
@@ -192,6 +256,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         overlayBtn.setVisibility(overlayOk ? View.GONE : View.VISIBLE);
         notifBtn.setVisibility(notifOk ? View.GONE : View.VISIBLE);
         batteryBtn.setVisibility(batteryOk ? View.GONE : View.VISIBLE);
+        captureBtn.setVisibility(capturing ? View.GONE : View.VISIBLE);
 
         updatingUi = true;
         effectSwitch.setChecked(Prefs.enabled(this) && overlayOk);
@@ -210,6 +275,8 @@ public class MainActivity extends Activity implements SensorEventListener {
             }
             Prefs.setEnabled(this, true);
             startForegroundService(svc);
+            // Real blur on Samsung needs screen capture, so ask right away.
+            if (!FoldEffectService.capturing) requestCapture();
         } else {
             Prefs.setEnabled(this, false);
             stopService(svc);

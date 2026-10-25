@@ -7,13 +7,18 @@ blur melts away and the screen comes into focus.
 ## How it works
 
 - Reads the phone's hinge angle sensor.
-- Shows a see-through window on top of the screen that uses Android's real background blur.
+- **Screen capture mode (version 2, works on Samsung):** keeps a small live copy of the screen.
+  When the hinge starts moving, it freezes that picture, blurs it inside the app, shows it on top,
+  and fades it away as the phone opens flat.
+- **Glass mode:** uses Android's window blur when screen capture is off. Samsung turns this blur
+  off on some phones (like the Fold 5), then only a tint shows.
 - The blur only shows while the hinge is moving. If you hold the phone half open, it fades away.
 - If the phone has no hinge sensor, it plays a short blur when the screen switches instead.
 
 Limits: this is an app, not a system change. It cannot change Samsung's own animation, only cover
-it with a blur. Real blur needs Android 12 or newer, Power saving OFF, and
-"Reduce transparency and blur" OFF. Otherwise a frosted look is used.
+it. Android stops screen capture when the phone locks. To keep it running, turn ON
+"Turn off screen share protections" in Developer options. Android shows a screen-sharing icon while
+capture is on.
 
 ## Get the APK for free (GitHub builds it for you)
 
