@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FoldBlur</string>
+    <string name="tagline">iPhone Duo style blur when you open or close your Fold.</string>
+
+    <string name="angle">Hinge angle: %1$d°</string>
+    <string name="no_angle">No hinge sensor found</string>
+    <string name="hinge_ok">Hinge sensor found</string>
+    <string name="hinge_missing">No hinge sensor. Backup mode: the blur plays when the screen switches.</string>
+    <string name="blur_ok">Real blur is supported</string>
+    <string name="blur_off">Real blur is off. Turn off Power saving, and turn off \"Reduce transparency and blur\" in Accessibility. Until then a frosted look is used.</string>
+    <string name="status_overlay">Appear on top allowed</string>
+    <string name="status_notif">Notification allowed</string>
+    <string name="status_battery">Battery: app can keep running</string>
+
+    <string name="setup">Setup (one time)</string>
+    <string name="step_overlay">1. Allow \"Appear on top\"</string>
+    <string name="step_notif">2. Allow notification</string>
+    <string name="step_battery">3. Let the app keep running (battery)</string>
+
+    <string name="effect">Effect</string>
+    <string name="effect_on">Effect ON</string>
+    <string name="test">Test effect now</string>
+    <string name="turn_on_first">Turn the effect ON first</string>
+    <string name="need_overlay">Allow \"Appear on top\" first (step 1)</string>
+
+    <string name="look">Look</string>
+    <string name="blur_strength">Blur strength</string>
+    <string name="frost">Frosted glass</string>
+    <string name="dark_glass">Dark glass</string>
+    <string name="on_close">Also play when closing</string>
+
+    <string name="fine_tune">Fine tune</string>
+    <string name="fine_tune_help">Watch the hinge angle above. Start angle: the blur begins after the phone opens past this. End angle: the screen is fully sharp at this angle.</string>
+    <string name="start_angle">Start angle</string>
+    <string name="end_angle">End angle</string>
+
+    <string name="help">Help</string>
+    <string name="help_text">If the effect stops after some time: Settings > Apps > FoldBlur > Battery > Unrestricted. Also in Settings > Battery > Background usage limits, add FoldBlur to \"Never sleeping apps\".\n\nThe blur covers the screen only while the hinge moves. If you hold the phone half open, it fades away by itself.</string>
+
+    <string name="channel_name">Fold effect</string>
+    <string name="notif_title">Fold effect is on</string>
+    <string name="notif_text">Open or close your phone to see it</string>
+    <string name="stop">Stop</string>
+</resources>

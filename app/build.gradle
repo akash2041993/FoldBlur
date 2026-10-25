@@ -1,0 +1,42 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.foldblur.app'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'com.foldblur.app'
+        minSdk 31          // Android 12+, needed for real window blur
+        targetSdk 34
+        versionCode 1
+        versionName '1.0'
+    }
+
+    // Same key on every build, so a new version installs over the old one.
+    signingConfigs {
+        shared {
+            storeFile file('foldblur.keystore')
+            storePassword 'foldblur'
+            keyAlias 'foldblur'
+            keyPassword 'foldblur'
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.shared
+        }
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.shared
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+        encoding 'UTF-8'
+    }
+}
