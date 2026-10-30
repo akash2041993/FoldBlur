@@ -1,0 +1,52 @@
+name: Build Download Mode APK
+
+on:
+  push:
+    branches: [download-mode-app]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    # Ubuntu 24.04 comes with the Android SDK already installed.
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Android SDK licenses
+        run: |
+          SDKM="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKM" --licenses > /dev/null || true
+          "$SDKM" "platforms;android-34" "build-tools;34.0.0" > /dev/null
+
+      - uses: gradle/actions/setup-gradle@v6
+        with:
+          gradle-version: '8.9'
+
+      - name: Build
+        run: gradle assembleDebug --no-daemon --stacktrace
+
+      - name: Rename APK
+        run: cp app/build/outputs/apk/debug/app-debug.apk DownloadMode.apk
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: DownloadMode-apk
+          path: DownloadMode.apk
+
+      - name: Publish download
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: downloadmode-${{ github.run_number }}
+          name: Download Mode app ${{ github.run_number }}
+          target_commitish: download-mode-app
+          prerelease: true
+          body: Reboots a Samsung phone into Download (Odin) mode through Shizuku. Not part of FoldBlur.
+          files: DownloadMode.apk
